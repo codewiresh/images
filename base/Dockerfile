@@ -32,9 +32,10 @@ RUN curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg \
 RUN locale-gen en_US.UTF-8
 ENV LANG=en_US.UTF-8
 
-RUN useradd coder --create-home --shell=/bin/bash --uid=1000 --user-group && \
-    echo "coder ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers.d/nopasswd && \
+RUN userdel -r ubuntu 2>/dev/null || true && \
     groupadd -f docker && \
+    useradd coder --create-home --shell=/bin/bash --uid=1000 --user-group && \
+    echo "coder ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers.d/nopasswd && \
     usermod -aG docker coder
 
 USER coder
