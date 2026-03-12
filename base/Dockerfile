@@ -38,12 +38,14 @@ RUN userdel -r ubuntu 2>/dev/null || true && \
     echo "coder ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers.d/nopasswd && \
     usermod -aG docker coder
 
-# SSH setup
-RUN mkdir -p /run/sshd
+# SSH setup: sshd runs as coder on port 2222 (no root/sudo needed at runtime)
+RUN mkdir -p /run/sshd && \
+    echo -e "Port 2222\nPasswordAuthentication no\nPermitRootLogin no\nPubkeyAuthentication yes\nHostKey /home/coder/.ssh/ssh_host_ed25519_key" \
+    > /etc/ssh/sshd_config.d/codewire.conf
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
-EXPOSE 22
+EXPOSE 2222
 
 USER coder
 WORKDIR /home/coder

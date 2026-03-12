@@ -9,15 +9,14 @@ if [ -n "$CODEWIRE_SSH_AUTHORIZED_KEYS" ]; then
     chmod 600 ~/.ssh/authorized_keys
 fi
 
-# Configure sshd: key auth only
-sudo tee /etc/ssh/sshd_config.d/codewire.conf > /dev/null <<'SSHD'
-PasswordAuthentication no
-PermitRootLogin no
-PubkeyAuthentication yes
-SSHD
+# Generate host key if missing (runs as coder, no sudo needed)
+if [ ! -f ~/.ssh/ssh_host_ed25519_key ]; then
+    mkdir -p ~/.ssh
+    ssh-keygen -t ed25519 -f ~/.ssh/ssh_host_ed25519_key -N "" -q
+fi
 
-# Start sshd in background
-sudo /usr/sbin/sshd
+# Start sshd on port 2222 as coder user (no root needed)
+/usr/sbin/sshd -f /etc/ssh/sshd_config -e 2>/dev/null &
 
 # Exec the original command
 exec "$@"
