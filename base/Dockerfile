@@ -5,7 +5,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && apt-get install -y --no-install-recommends \
     bash build-essential ca-certificates curl git htop jq locales man \
     postgresql-client python3 python3-pip software-properties-common \
-    sudo unzip vim wget rsync tmux && rm -rf /var/lib/apt/lists/*
+    sudo unzip vim wget rsync tmux openssh-server && rm -rf /var/lib/apt/lists/*
 
 # Latest git
 RUN add-apt-repository ppa:git-core/ppa && apt-get update && \
@@ -38,5 +38,15 @@ RUN userdel -r ubuntu 2>/dev/null || true && \
     echo "coder ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers.d/nopasswd && \
     usermod -aG docker coder
 
+# SSH setup
+RUN mkdir -p /run/sshd
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
+EXPOSE 22
+
 USER coder
 WORKDIR /home/coder
+
+ENTRYPOINT ["/entrypoint.sh"]
+CMD ["sleep", "infinity"]
