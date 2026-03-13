@@ -5,7 +5,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && apt-get install -y --no-install-recommends \
     bash build-essential ca-certificates curl git htop jq locales man \
     postgresql-client python3 python3-pip software-properties-common \
-    sudo unzip vim wget rsync tmux openssh-server && rm -rf /var/lib/apt/lists/*
+    sudo unzip vim wget rsync tmux && rm -rf /var/lib/apt/lists/*
 
 # Latest git
 RUN add-apt-repository ppa:git-core/ppa && apt-get update && \
@@ -38,17 +38,7 @@ RUN userdel -r ubuntu 2>/dev/null || true && \
     echo "codewire ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers.d/nopasswd && \
     usermod -aG docker codewire
 
-# SSH setup: sshd runs as codewire on port 2222 (no root/sudo needed at runtime)
-RUN mkdir -p /run/sshd && \
-    echo -e "Port 2222\nPasswordAuthentication no\nPermitRootLogin no\nPubkeyAuthentication yes\nHostKey /home/codewire/.ssh/ssh_host_ed25519_key" \
-    > /etc/ssh/sshd_config.d/codewire.conf
-COPY entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
-
-EXPOSE 2222
-
 USER codewire
 WORKDIR /home/codewire
 
-ENTRYPOINT ["/entrypoint.sh"]
 CMD ["sleep", "infinity"]
