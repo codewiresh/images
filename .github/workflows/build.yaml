@@ -30,8 +30,8 @@ jobs:
           context: base
           push: ${{ github.event_name == 'push' }}
           tags: |
-            ${{ env.IMAGE_PREFIX }}/workspace-base:latest
-            ${{ env.IMAGE_PREFIX }}/workspace-base:${{ github.sha }}
+            ${{ env.IMAGE_PREFIX }}/base:latest
+            ${{ env.IMAGE_PREFIX }}/base:${{ github.sha }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
@@ -55,7 +55,7 @@ jobs:
           context: full
           push: ${{ github.event_name == 'push' }}
           tags: |
-            ${{ env.IMAGE_PREFIX }}/workspace-full:latest
-            ${{ env.IMAGE_PREFIX }}/workspace-full:${{ github.sha }}
+            ${{ env.IMAGE_PREFIX }}/full:latest
+            ${{ env.IMAGE_PREFIX }}/full:${{ github.sha }}
           cache-from: type=gha
           cache-to: type=gha,mode=max

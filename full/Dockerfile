@@ -1,4 +1,4 @@
-FROM ghcr.io/codewiresh/workspace-base:latest
+FROM ghcr.io/codewiresh/base:latest
 USER root
 # Go
 RUN curl -fsSL https://go.dev/dl/go1.24.1.linux-amd64.tar.gz | tar -C /usr/local -xzf -
