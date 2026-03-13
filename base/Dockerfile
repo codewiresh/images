@@ -34,21 +34,21 @@ ENV LANG=en_US.UTF-8
 
 RUN userdel -r ubuntu 2>/dev/null || true && \
     groupadd -f docker && \
-    useradd coder --create-home --shell=/bin/bash --uid=1000 --user-group && \
-    echo "coder ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers.d/nopasswd && \
-    usermod -aG docker coder
+    useradd codewire --create-home --shell=/bin/bash --uid=1000 --user-group && \
+    echo "codewire ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers.d/nopasswd && \
+    usermod -aG docker codewire
 
-# SSH setup: sshd runs as coder on port 2222 (no root/sudo needed at runtime)
+# SSH setup: sshd runs as codewire on port 2222 (no root/sudo needed at runtime)
 RUN mkdir -p /run/sshd && \
-    echo -e "Port 2222\nPasswordAuthentication no\nPermitRootLogin no\nPubkeyAuthentication yes\nHostKey /home/coder/.ssh/ssh_host_ed25519_key" \
+    echo -e "Port 2222\nPasswordAuthentication no\nPermitRootLogin no\nPubkeyAuthentication yes\nHostKey /home/codewire/.ssh/ssh_host_ed25519_key" \
     > /etc/ssh/sshd_config.d/codewire.conf
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
 EXPOSE 2222
 
-USER coder
-WORKDIR /home/coder
+USER codewire
+WORKDIR /home/codewire
 
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["sleep", "infinity"]

@@ -9,13 +9,13 @@ if [ -n "$CODEWIRE_SSH_AUTHORIZED_KEYS" ]; then
     chmod 600 ~/.ssh/authorized_keys
 fi
 
-# Generate host key if missing (runs as coder, no sudo needed)
+# Generate host key if missing (runs as codewire, no sudo needed)
 if [ ! -f ~/.ssh/ssh_host_ed25519_key ]; then
     mkdir -p ~/.ssh
     ssh-keygen -t ed25519 -f ~/.ssh/ssh_host_ed25519_key -N "" -q
 fi
 
-# Start sshd on port 2222 as coder user (no root needed)
+# Start sshd on port 2222 as codewire user (no root needed)
 /usr/sbin/sshd -f /etc/ssh/sshd_config -e 2>/dev/null &
 
 # Exec the original command
