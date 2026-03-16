@@ -23,7 +23,7 @@ RUN install_args="" && \
     curl -fsSL https://raw.githubusercontent.com/codewiresh/codewire/main/install.sh | bash -s -- ${install_args}
 
 USER codewire
-RUN curl -fsSL https://claude.ai/install.sh | sh && \
+RUN curl -fsSL https://claude.ai/install.sh | bash && \
     go install golang.org/x/tools/gopls@latest && \
     pipx install poetry && pipx install uv
 
