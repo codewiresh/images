@@ -1,6 +1,6 @@
 FROM ghcr.io/codewiresh/base:latest
 USER root
-ARG CODEWIRE_VERSION=latest
+ARG CODEWIRE_VERSION=v0.3.241
 
 # Go
 RUN curl -fsSL https://go.dev/dl/go1.24.1.linux-amd64.tar.gz | tar -C /usr/local -xzf -
