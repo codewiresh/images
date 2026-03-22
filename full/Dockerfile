@@ -27,4 +27,9 @@ RUN curl -fsSL https://claude.ai/install.sh | bash && \
     go install golang.org/x/tools/gopls@latest && \
     pipx install poetry && pipx install uv
 
+USER root
+RUN cp "$(readlink -f /home/codewire/.local/bin/claude)" /usr/local/bin/claude && \
+    chmod 0755 /usr/local/bin/claude
+
+USER codewire
 ENV PATH="/home/codewire/.local/bin:${PATH}"
