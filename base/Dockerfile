@@ -1,6 +1,7 @@
 FROM ubuntu:noble
 SHELL ["/bin/bash", "-c"]
 ENV DEBIAN_FRONTEND=noninteractive
+ENV SHELL=/bin/bash
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     bash build-essential ca-certificates curl git htop jq locales man \
