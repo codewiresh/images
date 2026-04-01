@@ -15,7 +15,7 @@ RUN npm install -g pnpm yarn && \
 RUN npm install -g @openai/codex
 
 # Python
-RUN apt-get update && apt-get install -y python3-full python3-venv pipx && \
+RUN apt-get update && apt-get install -y python3-full python3-venv pipx strace && \
     rm -rf /var/lib/apt/lists/*
 
 RUN install_args="" && \
