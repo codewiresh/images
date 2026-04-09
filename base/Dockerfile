@@ -40,8 +40,12 @@ RUN userdel -r ubuntu 2>/dev/null || true && \
     usermod -aG docker codewire
 
 # SSH setup: sshd runs as codewire on port 2222.
-RUN mkdir -p /run/sshd && \
-    echo -e "Port 2222\nPasswordAuthentication no\nPermitRootLogin no\nPubkeyAuthentication yes\nHostKey /home/codewire/.ssh/ssh_host_ed25519_key" \
+# Host key and authorized_keys live in /etc/codewire/ssh/ so that
+# ~/.ssh can be mounted read-only from the host for git credentials.
+RUN mkdir -p /run/sshd /etc/codewire/ssh && \
+    chown codewire:codewire /etc/codewire/ssh && \
+    chmod 700 /etc/codewire/ssh && \
+    echo -e "Port 2222\nPasswordAuthentication no\nPermitRootLogin no\nPubkeyAuthentication yes\nHostKey /etc/codewire/ssh/ssh_host_ed25519_key\nAuthorizedKeysFile /etc/codewire/ssh/authorized_keys .ssh/authorized_keys" \
     > /etc/ssh/sshd_config.d/codewire.conf
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
