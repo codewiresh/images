@@ -14,7 +14,11 @@ RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash - && \
     apt-get install -y nodejs && rm -rf /var/lib/apt/lists/*
 RUN npm install -g pnpm yarn && \
     curl -fsSL https://bun.sh/install | bash && mv /root/.bun/bin/bun /usr/local/bin/
-RUN npm install -g @openai/codex @mariozechner/pi-coding-agent
+
+# NOTE: @openai/codex and @mariozechner/pi-coding-agent are installed below
+# as the `codewire` user into a user-owned npm prefix (~/.npm-global) so they
+# can self-update at runtime. Installing them here as root would put them in
+# /usr/lib/node_modules (root-owned) and break codex's automatic upgrade path.
 
 # Python
 RUN apt-get update && apt-get install -y python3-full python3-venv pipx strace gdb file && \
@@ -50,6 +54,12 @@ RUN curl -fsSL https://claude.ai/install.sh | bash && \
     go install golang.org/x/tools/gopls@latest && \
     pipx install poetry && pipx install uv
 
+# Install user-prefixed npm globals so codex / pi-coding-agent can self-update
+# at runtime without sudo (they live under $HOME, owned by `codewire`).
+RUN mkdir -p /home/codewire/.npm-global && \
+    npm config set prefix /home/codewire/.npm-global && \
+    npm install -g @openai/codex @mariozechner/pi-coding-agent
+
 # Rust toolchain (stable). Installed as the codewire user so CARGO_HOME
 # and RUSTUP_HOME live under $HOME and per-user invariants stay clean.
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs \
@@ -60,4 +70,4 @@ RUN cp "$(readlink -f /home/codewire/.local/bin/claude)" /usr/local/bin/claude &
     chmod 0755 /usr/local/bin/claude
 
 USER codewire
-ENV PATH="/home/codewire/.cargo/bin:/home/codewire/.local/bin:${PATH}"
+ENV PATH="/home/codewire/.npm-global/bin:/home/codewire/.cargo/bin:/home/codewire/.local/bin:${PATH}"
