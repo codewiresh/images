@@ -41,13 +41,16 @@ RUN curl -fsSL https://api.github.com/repos/hetznercloud/cli/releases/latest -o 
 RUN curl -1sLf 'https://artifacts-cli.infisical.com/setup.deb.sh' | bash && \
     apt-get install -y infisical && rm -rf /var/lib/apt/lists/*
 
-RUN git clone --filter=blob:none "${CODEWIRE_REPO}" /tmp/codewire && \
-    cd /tmp/codewire && \
-    if [ "${CODEWIRE_REF}" != "main" ]; then git fetch --depth 1 origin "${CODEWIRE_REF}" && git checkout FETCH_HEAD; fi && \
-    GOTOOLCHAIN=local GOMODCACHE=/tmp/go-mod-cache GOCACHE=/tmp/go-build-cache go build -trimpath -ldflags="-s -w" -o /usr/local/bin/cw ./cmd/cw && \
-    cw --version && \
-    rm -rf /tmp/codewire /tmp/go-mod-cache /tmp/go-build-cache && \
-    mkdir -p /home/codewire/go && chown -R codewire:codewire /home/codewire/go
+# TODO: rebuild cw from source in this image. This step is currently disabled
+# because:
+#   1. codewiresh/codewire is private; the workflow's default GITHUB_TOKEN is
+#      scoped to codewiresh/images and can't clone it cross-repo. Needs a
+#      fine-grained PAT mounted as a buildx secret, or the repo to go public.
+#   2. After the D.4 cli merge, cw source moved from `./cmd/cw` to
+#      `./apps/cli/cmd/cw` with its own go.mod — update the build command in
+#      lockstep when re-enabling.
+# The sandbox entrypoint gracefully skips `cw node` startup when cw is absent.
+RUN mkdir -p /home/codewire/go && chown -R codewire:codewire /home/codewire/go
 
 USER codewire
 RUN curl -fsSL https://claude.ai/install.sh | bash && \
